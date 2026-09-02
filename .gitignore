@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+article-scaffold/
+
+# local environment variables
+.env
+.env.*
+!.env.example
+
+# testing and coverage
+coverage/
+
+# local development files
+.DS_Store
+*.log
+dev-error.txt
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# editor files
+.vscode/
+.idea/
