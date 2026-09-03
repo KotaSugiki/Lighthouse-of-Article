@@ -1,8 +1,10 @@
-# Lighthouse of Article
-
-arXivの論文をキーワードで検索し、興味のある論文を保存・要約するためのWebアプリケーションです。
-
-個人利用を想定したMVPとして開発しています。
+<div align="center">
+  <img src="./public/readme-banner.png" alt="灯台の光が論文カードを照らす研究航海図" width="100%" />
+  <h1><em>論文の灯台</em></h1>
+  <p><code>LIGHTHOUSE OF ARTICLE</code></p>
+  <p>arXivの論文をキーワードで検索し、興味のある論文を保存・要約するためのWebアプリケーションです。</p>
+  <p><strong>個人利用を想定したMVPとして開発しています。</strong></p>
+</div>
 
 ## 現在の実装状況
 
