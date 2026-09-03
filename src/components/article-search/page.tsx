@@ -3,8 +3,37 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import type { FormEvent } from "react";
 
+import type { ArxivPaper, ArxivSearchResponse } from "@/lib/arxiv/types";
 import styles from "./article-search.module.css";
+
+const PAGE_SIZE = 20;
+
+type SearchState = "idle" | "loading" | "success" | "empty" | "error";
+
+function formatDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "公開日不明" : new Intl.DateTimeFormat("ja-JP").format(date);
+}
+
+function PaperCard({ paper }: { paper: ArxivPaper }) {
+  return (
+    <article className={styles.paperCard}>
+      <div className={styles.paperCardMeta}>
+        <span>{paper.categories[0] ?? "arXiv"}</span>
+        <span>{formatDate(paper.publishedAt)}</span>
+      </div>
+      <h2 className={styles.paperTitle}>{paper.title}</h2>
+      <p className={styles.paperAuthors}>{paper.authors.slice(0, 3).join(", ") || "著者情報なし"}</p>
+      <p className={styles.paperAbstract}>{paper.abstract}</p>
+      <div className={styles.paperCardFooter}>
+        <span>arXiv:{paper.arxivId}</span>
+        <a href={paper.arxivUrl} rel="noreferrer" target="_blank">arXivで読む ↗</a>
+      </div>
+    </article>
+  );
+}
 
 function BeaconMark() {
   return (
@@ -46,6 +75,41 @@ function MenuIcon({ open }: { open: boolean }) {
 
 export default function DraftPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [page, setPage] = useState(0);
+  const [result, setResult] = useState<ArxivSearchResponse | null>(null);
+  const [state, setState] = useState<SearchState>("idle");
+
+  async function runSearch(nextPage = 0) {
+    const normalizedKeyword = keyword.trim();
+    if (!normalizedKeyword) {
+      setPage(0);
+      setResult(null);
+      setState("idle");
+      return;
+    }
+
+    setPage(nextPage);
+    setState("loading");
+
+    try {
+      const response = await fetch(`/api/arxiv/search?q=${encodeURIComponent(normalizedKeyword)}&start=${nextPage * PAGE_SIZE}`);
+      const data = (await response.json()) as ArxivSearchResponse & { error?: string };
+      if (!response.ok) throw new Error(data.error ?? "arXivの検索に失敗しました");
+      setResult(data);
+      setState(data.entries.length === 0 ? "empty" : "success");
+    } catch {
+      setResult(null);
+      setState("error");
+    }
+  }
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void runSearch();
+  }
+
+  const totalPages = result ? Math.ceil(result.totalResults / PAGE_SIZE) : 0;
 
   return (
     <div className={styles.page}>
@@ -111,12 +175,12 @@ export default function DraftPage() {
             <h1 className={styles.heroTitle}>論文の海から、<br /><em>次の一篇</em>へ。</h1>
             <p className={styles.lead}>arXivの論文をキーワードで検索して、気になった論文を保存。読むべき一篇への航路を、ここから。</p>
 
-            <form action="/" className={styles.searchForm} method="get">
+            <form className={styles.searchForm} onSubmit={handleSubmit}>
               <label className={styles.searchLabel} htmlFor="draft-paper-search">論文を検索</label>
               <div className={styles.searchField}>
                 <SearchIcon />
-                <input id="draft-paper-search" name="q" placeholder="例）large language model" type="search" />
-                <button type="submit">検索する <span aria-hidden="true">↗</span></button>
+                <input id="draft-paper-search" name="q" onChange={(event) => setKeyword(event.target.value)} placeholder="例）large language model" type="search" value={keyword} />
+                <button disabled={state === "loading"} type="submit">{state === "loading" ? "検索中…" : "検索する"} <span aria-hidden="true">↗</span></button>
               </div>
             </form>
           </div>
@@ -145,20 +209,17 @@ export default function DraftPage() {
           </div>
         </section>
 
-        <section className={styles.emptyState} aria-live="polite">
+        <section className={styles.resultsSection} aria-live="polite">
           <div className={styles.emptyStateHeader}>
             <span className={styles.emptyIcon}>⌕</span>
-            <span>SEARCH RESULT</span>
+            <span>{state === "success" || state === "empty" ? `SEARCH RESULT / ${result?.totalResults ?? 0}` : "SEARCH RESULT"}</span>
           </div>
-          <div className={styles.emptyStateBody}>
-            <p className={styles.emptyTitle}>検索結果はここに表示されます</p>
-            <p className={styles.emptyDescription}>キーワードを入力して、論文を探しはじめましょう。</p>
-          </div>
-          <div className={styles.emptyStateFooter}>
-            <span>01 / QUERY</span>
-            <span className={styles.emptyStateArrow}>↓</span>
-            <span>YOUR RESEARCH STARTS HERE</span>
-          </div>
+          {state === "idle" && <div className={styles.emptyStateBody}><p className={styles.emptyTitle}>検索結果はここに表示されます</p><p className={styles.emptyDescription}>キーワードを入力して、論文を探しはじめましょう。</p></div>}
+          {state === "loading" && <div className={styles.emptyStateBody}><p className={styles.emptyTitle}>論文を探しています…</p><p className={styles.emptyDescription}>arXivから最新の検索結果を読み込んでいます。</p></div>}
+          {state === "error" && <div className={styles.emptyStateBody}><p className={styles.emptyTitle}>検索に失敗しました</p><p className={styles.emptyDescription}>通信状態を確認して、もう一度お試しください。</p><button className={styles.retryButton} onClick={() => void runSearch(page)} type="button">再試行 ↻</button></div>}
+          {state === "empty" && <div className={styles.emptyStateBody}><p className={styles.emptyTitle}>該当する論文が見つかりませんでした</p><p className={styles.emptyDescription}>「{keyword.trim()}」を別のキーワードで検索してみてください。</p></div>}
+          {state === "success" && result && <div className={styles.resultsBody}><div className={styles.paperGrid}>{result.entries.map((paper) => <PaperCard key={paper.arxivId} paper={paper} />)}</div><div className={styles.pagination}><button disabled={page === 0} onClick={() => void runSearch(page - 1)} type="button">← 前へ</button><span>{page + 1} / {totalPages}</span><button disabled={page + 1 >= totalPages} onClick={() => void runSearch(page + 1)} type="button">次へ →</button></div></div>}
+          {state !== "success" && <div className={styles.emptyStateFooter}><span>01 / QUERY</span><span className={styles.emptyStateArrow}>↓</span><span>YOUR RESEARCH STARTS HERE</span></div>}
         </section>
 
         <footer className={styles.mainFooter}>
