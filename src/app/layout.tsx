@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lighthouse of Article",
+  title: "論文の灯台",
   description: "arXiv論文を検索・保存・閲覧するための個人向けアプリ",
 };
 
