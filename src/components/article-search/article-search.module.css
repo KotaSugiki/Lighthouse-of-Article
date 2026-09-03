@@ -1,0 +1,272 @@
+.page {
+  --navy: #000066;
+  --ice: #e0f4ff;
+  --white: #ffffff;
+  --yellow: #ffcc00;
+  min-height: 100vh;
+  background: var(--ice);
+  color: var(--navy);
+  font-family: var(--font-geist-sans), "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.page * { box-sizing: border-box; }
+
+.sidebar {
+  background: var(--navy);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  left: 0;
+  min-height: 100vh;
+  padding: 32px 24px 26px;
+  position: fixed;
+  top: 0;
+  width: 248px;
+  z-index: 20;
+}
+
+.brand {
+  align-items: center;
+  color: var(--white);
+  display: flex;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.brandMark {
+  align-items: center;
+  background: var(--yellow);
+  color: var(--navy);
+  display: flex;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.beaconMark { height: 34px; width: 34px; }
+
+.brandName {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.brandCaption {
+  color: var(--ice);
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  margin-top: 5px;
+  opacity: 0.62;
+}
+
+.sidebarRule {
+  border-top: 1px solid var(--ice);
+  margin: 32px 0 22px;
+  opacity: 0.24;
+}
+
+.nav { display: grid; gap: 7px; }
+
+.navLink {
+  align-items: center;
+  color: var(--ice);
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 12px;
+  min-height: 47px;
+  padding: 0 13px;
+  position: relative;
+  text-decoration: none;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.navLink:hover, .navLink:focus-visible { background: var(--ice); color: var(--navy); outline: none; }
+
+.navLinkActive { background: var(--yellow); color: var(--navy); }
+
+.icon { flex: 0 0 auto; height: 19px; width: 19px; }
+
+.navDot {
+  background: currentColor;
+  border-radius: 50%;
+  height: 5px;
+  margin-left: auto;
+  width: 5px;
+}
+
+.sidebarFooter { color: var(--ice); }
+
+.footerSignal, .footerVersion {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.footerSignal { align-items: center; color: var(--yellow); display: flex; gap: 7px; }
+.footerSignal span, .toplineStatus span, .live span { background: currentColor; border-radius: 50%; display: inline-block; height: 5px; width: 5px; }
+.sidebarFooter p { font-size: 12px; line-height: 1.8; margin: 12px 0 19px; opacity: 0.72; }
+.footerVersion { font-size: 8px; opacity: 0.38; }
+
+.main {
+  margin-left: 248px;
+  min-height: 100vh;
+  padding: 0 6.2vw 30px;
+}
+
+.topline {
+  align-items: center;
+  border-bottom: 1px solid var(--navy);
+  display: flex;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 9px;
+  justify-content: space-between;
+  letter-spacing: 0.15em;
+  min-height: 53px;
+  opacity: 0.78;
+}
+
+.toplineStatus { align-items: center; display: flex; gap: 8px; }
+.toplineStatus span { color: var(--yellow); }
+
+.hero {
+  align-items: stretch;
+  display: grid;
+  gap: clamp(34px, 6vw, 104px);
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 0.64fr);
+  margin: 0 auto;
+  max-width: 1150px;
+  padding: clamp(56px, 8vw, 102px) 0 clamp(65px, 9vw, 116px);
+}
+
+.heroCopy { align-self: center; max-width: 650px; }
+
+.eyebrow {
+  align-items: center;
+  display: flex;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  gap: 10px;
+  letter-spacing: 0.18em;
+  margin: 0;
+}
+
+.eyebrow span { background: var(--yellow); display: inline-block; height: 8px; width: 26px; }
+
+.heroTitle {
+  font-family: Georgia, "Times New Roman", "Yu Mincho", serif;
+  font-size: clamp(42px, 5.9vw, 78px);
+  font-weight: 400;
+  letter-spacing: -0.085em;
+  line-height: 1.08;
+  margin: 26px 0 25px;
+}
+
+.heroTitle em { color: var(--navy); font-style: normal; position: relative; z-index: 0; }
+.heroTitle em::after { background: var(--yellow); bottom: 7%; content: ""; height: 13px; left: -3px; position: absolute; transform: rotate(-1.4deg); width: 103%; z-index: -1; }
+
+.lead { font-size: 15px; line-height: 2; margin: 0; max-width: 510px; }
+
+.searchForm { margin-top: 41px; }
+.searchLabel { display: block; font-size: 11px; font-weight: 700; margin-bottom: 9px; }
+
+.searchField {
+  align-items: center;
+  background: var(--white);
+  border-left: 7px solid var(--yellow);
+  display: flex;
+  min-height: 64px;
+  padding: 0 8px 0 17px;
+}
+
+.searchField:focus-within { outline: 3px solid var(--yellow); outline-offset: 3px; }
+.searchField > .icon { color: var(--navy); margin-right: 12px; }
+.searchField input { background: transparent; border: 0; color: var(--navy); flex: 1; font: inherit; font-size: 14px; min-width: 0; outline: none; }
+.searchField input::placeholder { color: var(--navy); opacity: 0.42; }
+.searchField button { background: var(--navy); border: 0; color: var(--white); cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; height: 48px; padding: 0 17px; transition: background-color 180ms ease, color 180ms ease; }
+.searchField button:hover, .searchField button:focus-visible { background: var(--yellow); color: var(--navy); outline: none; }
+.searchField button span { font-size: 17px; margin-left: 7px; }
+
+.beaconPanel {
+  background: var(--navy);
+  color: var(--white);
+  min-height: 390px;
+  overflow: hidden;
+  padding: 22px 24px;
+  position: relative;
+}
+
+.beaconImage { object-fit: cover; object-position: center; }
+.beaconPanelTop { color: var(--ice); display: flex; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 9px; justify-content: space-between; letter-spacing: 0.14em; position: relative; z-index: 1; }
+.live { align-items: center; display: flex; gap: 6px; }
+.live span { color: var(--yellow); }
+.beaconNote { align-items: flex-start; bottom: 102px; display: flex; gap: 12px; left: 24px; position: absolute; z-index: 1; }
+.noteLine { background: var(--yellow); display: block; height: 30px; margin-top: 2px; width: 4px; }
+.beaconNote p { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; letter-spacing: 0.11em; line-height: 1.55; margin: 0; }
+.beaconNote strong { color: var(--yellow); font-size: 14px; }
+.beaconMeta { bottom: 20px; color: var(--ice); display: flex; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 8px; justify-content: space-between; left: 24px; letter-spacing: 0.1em; opacity: 0.55; position: absolute; right: 24px; }
+
+.emptyState { border: 1px solid var(--navy); margin: 0 auto; max-width: 1150px; }
+.emptyStateHeader { align-items: center; border-bottom: 1px solid var(--navy); display: flex; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 9px; gap: 11px; letter-spacing: 0.17em; padding: 13px 17px; }
+.emptyIcon { font-family: Georgia, serif; font-size: 19px; line-height: 0; }
+.emptyStateBody { background: var(--white); min-height: 137px; padding: 28px 31px; }
+.emptyTitle { font-size: 15px; font-weight: 700; margin: 0; }
+.emptyDescription { font-size: 12px; line-height: 1.8; margin: 8px 0 0; opacity: 0.68; }
+.emptyStateFooter { align-items: center; background: var(--yellow); display: flex; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 8px; justify-content: space-between; letter-spacing: 0.12em; min-height: 35px; padding: 0 17px; }
+.emptyStateArrow { font-size: 16px; line-height: 0; }
+
+.mainFooter { display: flex; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 8px; justify-content: space-between; letter-spacing: 0.14em; margin: 22px auto 0; max-width: 1150px; opacity: 0.5; }
+
+.mobileMenuButton, .mobileScrim { display: none; }
+
+@media (max-width: 900px) {
+  .sidebar { width: 220px; }
+  .main { margin-left: 220px; padding-left: 5vw; padding-right: 5vw; }
+  .hero { gap: 34px; grid-template-columns: minmax(0, 1fr) minmax(220px, 0.72fr); }
+  .beaconPanel { min-height: 350px; padding-left: 18px; padding-right: 18px; }
+  .beaconNote { left: 18px; }
+  .beaconMeta { left: 18px; right: 18px; }
+}
+
+@media (max-width: 700px) {
+  .mobileMenuButton { align-items: center; background: var(--navy); border: 0; color: var(--yellow); display: flex; height: 48px; justify-content: center; left: 12px; position: fixed; top: 12px; width: 48px; z-index: 40; }
+  .mobileMenuButton:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
+  .mobileScrim { background: var(--navy); border: 0; display: block; inset: 0; opacity: 0.35; position: fixed; z-index: 25; }
+  .sidebar { padding: 28px 22px 24px; transform: translateX(-100%); transition: transform 180ms ease; width: min(82vw, 286px); z-index: 30; }
+  .sidebarOpen { transform: translateX(0); }
+  .main { margin-left: 0; padding: 0 20px 24px; }
+  .topline { padding-left: 63px; }
+  .topline > span:first-child { max-width: 145px; }
+  .hero { display: block; padding: 57px 0 48px; }
+  .heroTitle { font-size: clamp(43px, 13vw, 65px); margin-top: 23px; }
+  .lead { font-size: 14px; line-height: 1.9; }
+  .searchForm { margin-top: 30px; }
+  .searchField { align-items: stretch; display: grid; grid-template-columns: auto 1fr; padding: 8px 8px 8px 14px; }
+  .searchField > .icon { align-self: center; grid-row: span 2; margin-right: 11px; }
+  .searchField input { min-height: 38px; }
+  .searchField button { grid-column: 2; height: 40px; }
+  .beaconPanel { margin-top: 48px; min-height: 300px; }
+  .beaconNote { bottom: 72px; }
+  .beaconPanelTop { font-size: 8px; }
+  .emptyStateBody { min-height: 124px; padding: 25px 20px; }
+  .emptyStateFooter { gap: 10px; justify-content: flex-start; }
+  .emptyStateFooter span:last-child { margin-left: auto; text-align: right; }
+  .mainFooter { flex-direction: column; gap: 8px; line-height: 1.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navLink, .searchField button, .sidebar { transition: none; }
+}
+
+.menuIcon { display: grid; gap: 6px; width: 19px; }
+.menuIcon span { background: currentColor; display: block; height: 2px; transition: transform 180ms ease; width: 19px; }
+.menuIconOpen span:first-child { transform: translateY(4px) rotate(45deg); }
+.menuIconOpen span:last-child { transform: translateY(-4px) rotate(-45deg); }
