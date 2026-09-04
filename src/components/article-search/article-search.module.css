@@ -84,6 +84,7 @@
   padding: 0 13px;
   position: relative;
   text-decoration: none;
+  white-space: nowrap;
   transition: background-color 180ms ease, color 180ms ease;
 }
 
@@ -234,12 +235,27 @@
 .paperAuthors { font-size: 11px; line-height: 1.5; margin: 0; opacity: 0.68; }
 .paperAbstract { display: -webkit-box; font-size: 12px; line-height: 1.75; margin: 14px 0 20px; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
 .paperCardFooter { align-items: center; border-top: 1px solid rgba(0, 0, 102, 0.16); margin-top: auto; padding-top: 13px; }
+.paperCardActions { align-items: center; display: flex; gap: 12px; }
 .paperCardFooter a { color: var(--navy); font-weight: 700; }
+.bookmarkButton { align-items: center; background: transparent; border: 1px solid rgba(0, 0, 102, 0.35); color: var(--navy); cursor: pointer; display: flex; height: 32px; justify-content: center; padding: 0; width: 32px; }
+.bookmarkButton svg { height: 17px; width: 17px; }
+.bookmarkButton:hover, .bookmarkButton:focus-visible { background: var(--yellow); border-color: var(--navy); outline: none; }
+.bookmarkButtonSaved { background: var(--yellow); }
+.bookmarkButton:disabled { cursor: wait; opacity: 0.5; }
 .pagination { align-items: center; display: flex; justify-content: center; gap: 19px; margin-top: 22px; }
 .pagination button, .retryButton { background: var(--navy); border: 0; color: var(--white); cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; padding: 11px 15px; }
 .pagination button:hover:not(:disabled), .pagination button:focus-visible, .retryButton:hover, .retryButton:focus-visible { background: var(--yellow); color: var(--navy); outline: none; }
 .pagination button:disabled, .searchField button:disabled { cursor: not-allowed; opacity: 0.45; }
 .retryButton { margin-top: 16px; }
+.toast { align-items: center; background: var(--navy); bottom: 24px; box-shadow: 0 12px 30px rgba(0, 0, 102, 0.2); color: var(--white); display: flex; font-size: 12px; gap: 17px; justify-content: space-between; left: 50%; max-width: calc(100vw - 40px); padding: 14px 17px; position: fixed; transform: translateX(-50%); width: max-content; z-index: 50; }
+.toast button { background: var(--yellow); border: 0; color: var(--navy); cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; padding: 7px 11px; }
+.toast button:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
+.savedPageContent { margin: 0 auto; max-width: 1150px; padding: clamp(58px, 8vw, 105px) 0 80px; }
+.savedPageHeader { align-items: end; display: flex; justify-content: space-between; margin-bottom: 38px; }
+.savedPageHeader h1 { font-family: Georgia, "Times New Roman", "Yu Mincho", serif; font-size: clamp(36px, 5vw, 70px); font-weight: 400; letter-spacing: -0.08em; line-height: 1.05; margin: 20px 0 0; white-space: nowrap; }
+.savedPageHeader p { font-size: 13px; line-height: 1.8; margin: 0; max-width: 340px; opacity: 0.68; }
+.savedPageLink { color: var(--navy); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 10px; letter-spacing: 0.08em; text-decoration: none; }
+.savedPageLink:hover, .savedPageLink:focus-visible { color: var(--yellow); outline: none; }
 
 .mobileMenuButton, .mobileScrim { display: none; }
 
@@ -276,6 +292,10 @@
   .resultsBody { padding: 14px; }
   .paperGrid { grid-template-columns: 1fr; }
   .paperTitle { font-size: 18px; }
+  .savedPageContent { padding: 54px 0 60px; }
+  .savedPageHeader { align-items: flex-start; flex-direction: column; gap: 18px; margin-bottom: 28px; }
+  .savedPageHeader h1 { font-size: clamp(34px, 12vw, 65px); }
+  .savedPageHeader p { font-size: 12px; }
   .emptyStateFooter { gap: 10px; justify-content: flex-start; }
   .emptyStateFooter span:last-child { margin-left: auto; text-align: right; }
   .mainFooter { flex-direction: column; gap: 8px; line-height: 1.6; }
