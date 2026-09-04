@@ -3,10 +3,18 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { ArxivSearchResponse } from "../../src/lib/arxiv/types";
 
-const { searchArxivMock } = vi.hoisted(() => ({ searchArxivMock: vi.fn() }));
+const { searchArxivMock, ArxivSearchUnavailableErrorMock } = vi.hoisted(() => {
+  class MockArxivSearchUnavailableError extends Error {}
+
+  return {
+    searchArxivMock: vi.fn(),
+    ArxivSearchUnavailableErrorMock: MockArxivSearchUnavailableError,
+  };
+});
 
 vi.mock("../../src/lib/arxiv/client", () => ({
   searchArxiv: searchArxivMock,
+  ArxivSearchUnavailableError: ArxivSearchUnavailableErrorMock,
 }));
 
 import { GET } from "../../src/app/api/arxiv/search/route";
@@ -45,6 +53,15 @@ describe("GET /api/arxiv/search", () => {
     const result = await GET(new NextRequest("http://localhost/api/arxiv/search?q=agents"));
 
     expect(result.status).toBe(502);
+    await expect(result.json()).resolves.toEqual({ error: "arXivの検索に失敗しました" });
+  });
+
+  it("returns service unavailable when arXiv is temporarily unavailable", async () => {
+    searchArxivMock.mockRejectedValue(new ArxivSearchUnavailableErrorMock());
+
+    const result = await GET(new NextRequest("http://localhost/api/arxiv/search?q=agents"));
+
+    expect(result.status).toBe(503);
     await expect(result.json()).resolves.toEqual({ error: "arXivの検索に失敗しました" });
   });
 });

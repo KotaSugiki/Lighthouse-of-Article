@@ -13,8 +13,14 @@ const { eqMock, existingSingleMock, fromMock, inMock, insertMock, orderMock, ran
   singleMock: vi.fn(),
 }));
 
+const { createSupabaseServerClientMock, isSupabaseConfiguredMock } = vi.hoisted(() => ({
+  createSupabaseServerClientMock: vi.fn(() => ({ from: fromMock })),
+  isSupabaseConfiguredMock: vi.fn(() => true),
+}));
+
 vi.mock("../../src/lib/supabase/server", () => ({
-  createSupabaseServerClient: () => ({ from: fromMock }),
+  createSupabaseServerClient: createSupabaseServerClientMock,
+  isSupabaseConfigured: isSupabaseConfiguredMock,
 }));
 
 import { GET, POST } from "../../src/app/api/papers/route";
@@ -151,6 +157,8 @@ describe("POST /api/papers", () => {
 
 describe("GET /api/papers", () => {
   beforeEach(() => {
+    createSupabaseServerClientMock.mockImplementation(() => ({ from: fromMock }));
+    isSupabaseConfiguredMock.mockReturnValue(true);
     fromMock.mockReset();
     selectMock.mockReset();
     orderMock.mockReset();
@@ -197,5 +205,14 @@ describe("GET /api/papers", () => {
     expect(inMock).toHaveBeenCalledWith("arxiv_id", ["2601.00001", "2601.00002"]);
     expect(result.status).toBe(200);
     await expect(result.json()).resolves.toEqual({ savedArxivIds: [paper.arxivId] });
+  });
+
+  it("returns no saved IDs when Supabase is not configured", async () => {
+    isSupabaseConfiguredMock.mockReturnValueOnce(false);
+
+    const result = await GET(new NextRequest("http://localhost/api/papers?arxivIds=2601.00001"));
+
+    expect(result.status).toBe(200);
+    await expect(result.json()).resolves.toEqual({ savedArxivIds: [] });
   });
 });
