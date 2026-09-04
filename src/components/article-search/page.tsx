@@ -6,34 +6,12 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 
 import type { ArxivPaper, ArxivSearchResponse } from "@/lib/arxiv/types";
+import { PaperCard } from "@/components/papers/paper-card";
 import styles from "./article-search.module.css";
 
 const PAGE_SIZE = 20;
 
 type SearchState = "idle" | "loading" | "success" | "empty" | "error";
-
-function formatDate(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "公開日不明" : new Intl.DateTimeFormat("ja-JP").format(date);
-}
-
-function PaperCard({ paper }: { paper: ArxivPaper }) {
-  return (
-    <article className={styles.paperCard}>
-      <div className={styles.paperCardMeta}>
-        <span>{paper.categories[0] ?? "arXiv"}</span>
-        <span>{formatDate(paper.publishedAt)}</span>
-      </div>
-      <h2 className={styles.paperTitle}>{paper.title}</h2>
-      <p className={styles.paperAuthors}>{paper.authors.slice(0, 3).join(", ") || "著者情報なし"}</p>
-      <p className={styles.paperAbstract}>{paper.abstract}</p>
-      <div className={styles.paperCardFooter}>
-        <span>arXiv:{paper.arxivId}</span>
-        <a href={paper.arxivUrl} rel="noreferrer" target="_blank">arXivで読む ↗</a>
-      </div>
-    </article>
-  );
-}
 
 function BeaconMark() {
   return (
@@ -79,6 +57,26 @@ export default function DraftPage() {
   const [page, setPage] = useState(0);
   const [result, setResult] = useState<ArxivSearchResponse | null>(null);
   const [state, setState] = useState<SearchState>("idle");
+  const [savedArxivIds, setSavedArxivIds] = useState<Set<string>>(new Set());
+  const [savingArxivIds, setSavingArxivIds] = useState<Set<string>>(new Set());
+  const [toast, setToast] = useState<{ message: string; paper?: ArxivPaper } | null>(null);
+
+  async function loadSavedArxivIds(papers: ArxivPaper[]) {
+    if (papers.length === 0) {
+      setSavedArxivIds(new Set());
+      return;
+    }
+
+    try {
+      const ids = papers.map((paper) => paper.arxivId).join(",");
+      const response = await fetch(`/api/papers?arxivIds=${encodeURIComponent(ids)}`);
+      if (!response.ok) throw new Error("保存状態の取得に失敗しました");
+      const data = (await response.json()) as { savedArxivIds: string[] };
+      setSavedArxivIds(new Set(data.savedArxivIds));
+    } catch {
+      setSavedArxivIds(new Set());
+    }
+  }
 
   async function runSearch(nextPage = 0) {
     const normalizedKeyword = keyword.trim();
@@ -98,9 +96,41 @@ export default function DraftPage() {
       if (!response.ok) throw new Error(data.error ?? "arXivの検索に失敗しました");
       setResult(data);
       setState(data.entries.length === 0 ? "empty" : "success");
+      await loadSavedArxivIds(data.entries);
     } catch {
       setResult(null);
+      setSavedArxivIds(new Set());
       setState("error");
+    }
+  }
+
+  async function toggleSave(paper: ArxivPaper) {
+    const isSaved = savedArxivIds.has(paper.arxivId);
+    setSavingArxivIds((current) => new Set(current).add(paper.arxivId));
+
+    try {
+      const response = await fetch(isSaved ? `/api/papers/${encodeURIComponent(paper.arxivId)}` : "/api/papers", {
+        body: isSaved ? undefined : JSON.stringify(paper),
+        headers: isSaved ? undefined : { "content-type": "application/json" },
+        method: isSaved ? "DELETE" : "POST",
+      });
+      if (!response.ok) throw new Error("保存状態の更新に失敗しました");
+
+      setSavedArxivIds((current) => {
+        const next = new Set(current);
+        if (isSaved) next.delete(paper.arxivId);
+        else next.add(paper.arxivId);
+        return next;
+      });
+      setToast({ message: isSaved ? "論文の保存を解除しました" : "論文を保存しました" });
+    } catch {
+      setToast({ message: isSaved ? "保存解除に失敗しました" : "保存に失敗しました", paper });
+    } finally {
+      setSavingArxivIds((current) => {
+        const next = new Set(current);
+        next.delete(paper.arxivId);
+        return next;
+      });
     }
   }
 
@@ -218,9 +248,11 @@ export default function DraftPage() {
           {state === "loading" && <div className={styles.emptyStateBody}><p className={styles.emptyTitle}>論文を探しています…</p><p className={styles.emptyDescription}>arXivから最新の検索結果を読み込んでいます。</p></div>}
           {state === "error" && <div className={styles.emptyStateBody}><p className={styles.emptyTitle}>検索に失敗しました</p><p className={styles.emptyDescription}>通信状態を確認して、もう一度お試しください。</p><button className={styles.retryButton} onClick={() => void runSearch(page)} type="button">再試行 ↻</button></div>}
           {state === "empty" && <div className={styles.emptyStateBody}><p className={styles.emptyTitle}>該当する論文が見つかりませんでした</p><p className={styles.emptyDescription}>「{keyword.trim()}」を別のキーワードで検索してみてください。</p></div>}
-          {state === "success" && result && <div className={styles.resultsBody}><div className={styles.paperGrid}>{result.entries.map((paper) => <PaperCard key={paper.arxivId} paper={paper} />)}</div><div className={styles.pagination}><button disabled={page === 0} onClick={() => void runSearch(page - 1)} type="button">← 前へ</button><span>{page + 1} / {totalPages}</span><button disabled={page + 1 >= totalPages} onClick={() => void runSearch(page + 1)} type="button">次へ →</button></div></div>}
+          {state === "success" && result && <div className={styles.resultsBody}><div className={styles.paperGrid}>{result.entries.map((paper) => <PaperCard key={paper.arxivId} paper={paper} saved={savedArxivIds.has(paper.arxivId)} saving={savingArxivIds.has(paper.arxivId)} onToggleSave={toggleSave} />)}</div><div className={styles.pagination}><button disabled={page === 0} onClick={() => void runSearch(page - 1)} type="button">← 前へ</button><span>{page + 1} / {totalPages}</span><button disabled={page + 1 >= totalPages} onClick={() => void runSearch(page + 1)} type="button">次へ →</button></div></div>}
           {state !== "success" && <div className={styles.emptyStateFooter}><span>01 / QUERY</span><span className={styles.emptyStateArrow}>↓</span><span>YOUR RESEARCH STARTS HERE</span></div>}
         </section>
+
+        {toast && <div className={styles.toast} role="status"><span>{toast.message}</span>{toast.paper && <button onClick={() => void toggleSave(toast.paper!)} type="button">再試行</button>}</div>}
 
         <footer className={styles.mainFooter}>
           <span>ARXIV PAPER EXPLORER</span>
