@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>論文の灯台</title>
+  <rect width="64" height="64" rx="14" fill="#000066"/>
+
+  <path d="M27 14 7 9v10l20-2Z" fill="#E0F4FF"/>
+  <path d="m37 14 20-5v10l-20-2Z" fill="#E0F4FF"/>
+  <path d="M27 15 10 12v3l17 2Z" fill="#FFCC00"/>
+  <path d="m37 15 17-3v3l-17 2Z" fill="#FFCC00"/>
+
+  <circle cx="32" cy="14" r="4" fill="#FFCC00"/>
+  <path d="M25 20h14l-3 7h-8Z" fill="#FFFFFF"/>
+  <path d="M22 27h20v3H22z" fill="#FFFFFF"/>
+  <path d="m27 30h10l3 23H24Z" fill="#FFFFFF"/>
+  <path d="M29 31h6v17h-6z" fill="#000066"/>
+  <path d="M21 53h22v4H21z" fill="#FFFFFF"/>
+</svg>
