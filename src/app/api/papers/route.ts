@@ -1,4 +1,5 @@
 import { getSavedArxivIds, listSavedPapers, savePaper } from "../../../lib/papers/repository";
+import { isSupabaseConfigured } from "../../../lib/supabase/server";
 import { parsePaperInput } from "../../../lib/papers/types";
 
 const PAGE_SIZE = 20;
@@ -8,6 +9,10 @@ export async function GET(request: Request) {
   const requestedArxivIds = searchParams.get("arxivIds");
   if (requestedArxivIds !== null) {
     const arxivIds = requestedArxivIds.split(",").map((arxivId) => arxivId.trim()).filter(Boolean).slice(0, PAGE_SIZE);
+
+    if (!isSupabaseConfigured()) {
+      return Response.json({ savedArxivIds: [] });
+    }
 
     try {
       return Response.json({ savedArxivIds: await getSavedArxivIds(arxivIds) });
