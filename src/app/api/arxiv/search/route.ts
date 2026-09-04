@@ -1,6 +1,9 @@
 import { NextRequest } from "next/server";
 
-import { searchArxiv } from "../../../../lib/arxiv/client";
+import {
+  ArxivSearchUnavailableError,
+  searchArxiv,
+} from "../../../../lib/arxiv/client";
 
 export async function GET(request: NextRequest) {
   const keyword = request.nextUrl.searchParams.get("q") ?? "";
@@ -15,6 +18,7 @@ export async function GET(request: NextRequest) {
     return Response.json(result);
   } catch (error) {
     console.error("arXiv search failed", error);
-    return Response.json({ error: "arXivの検索に失敗しました" }, { status: 502 });
+    const status = error instanceof ArxivSearchUnavailableError ? 503 : 502;
+    return Response.json({ error: "arXivの検索に失敗しました" }, { status });
   }
 }
