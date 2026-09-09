@@ -1,3 +1,8 @@
+.detailLink { align-self: flex-start; font-size: 13px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+.detailHint { font-size: 12px; opacity: .7; }
+.paperTitle a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.paperTitle a:focus-visible, .detailLink:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+
 .page {
   --navy: #000066;
   --ice: #e0f4ff;
@@ -251,6 +256,7 @@
 .toast button { background: var(--yellow); border: 0; color: var(--navy); cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; padding: 7px 11px; }
 .toast button:focus-visible { outline: 2px solid var(--white); outline-offset: 2px; }
 .savedPageContent { margin: 0 auto; max-width: 1150px; padding: clamp(58px, 8vw, 105px) 0 80px; }
+.detailContent { margin: 0 auto; max-width: 1150px; padding: clamp(58px, 8vw, 105px) 0 80px; }
 .savedPageHeader { align-items: end; display: flex; justify-content: space-between; margin-bottom: 38px; }
 .savedPageHeader h1 { font-family: Georgia, "Times New Roman", "Yu Mincho", serif; font-size: clamp(36px, 5vw, 70px); font-weight: 400; letter-spacing: -0.08em; line-height: 1.05; margin: 20px 0 0; white-space: nowrap; }
 .savedPageHeader p { font-size: 13px; line-height: 1.8; margin: 0; max-width: 340px; opacity: 0.68; }
@@ -293,6 +299,7 @@
   .paperGrid { grid-template-columns: 1fr; }
   .paperTitle { font-size: 18px; }
   .savedPageContent { padding: 54px 0 60px; }
+  .detailContent { padding: 54px 0 60px; }
   .savedPageHeader { align-items: flex-start; flex-direction: column; gap: 18px; margin-bottom: 28px; }
   .savedPageHeader h1 { font-size: clamp(34px, 12vw, 65px); }
   .savedPageHeader p { font-size: 12px; }
