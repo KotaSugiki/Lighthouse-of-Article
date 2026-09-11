@@ -8,9 +8,9 @@
 
 ## 現在の実装状況
 
-M4「論文保存と保存論文一覧」まで完了し、M5「論文詳細・arXiv閲覧導線」を実装中です。
+M5「論文詳細・arXiv閲覧導線」まで完了し、M6「abstract要約機能」を実装中です。
 
-タスクは[GitHub LIFE Project](https://github.com/users/KotaSugiki/projects/1)で管理しています。親Issueは[LIFE #86](https://github.com/KotaSugiki/LIFE/issues/86)、現在の作業は[LIFE #94](https://github.com/KotaSugiki/LIFE/issues/94)です。
+タスクは[GitHub LIFE Project](https://github.com/users/KotaSugiki/projects/1)で管理しています。親Issueは[LIFE #86](https://github.com/KotaSugiki/LIFE/issues/86)、現在の作業は[LIFE #95](https://github.com/KotaSugiki/LIFE/issues/95)です。
 
 ### 実装済み
 
@@ -29,11 +29,11 @@ M4「論文保存と保存論文一覧」まで完了し、M5「論文詳細・a
 - 読み込み中・0件・通信エラー・操作結果の通知
 - 保存済み論文の詳細表示、abstract全文表示、保存論文一覧への戻る導線
 - 詳細画面からの保存解除、解除後の航海イラスト付き状態表示
+- abstractの構造化された日本語要約の生成、保存、再表示、失敗時の再試行
+- 要約のpending・processing・completed・failed状態の表示と二重実行防止
 
 ### 開発中・未実装
 
-- 要約状態の取得を含む論文詳細画面の仕上げ（M5）
-- abstractのAI要約と要約結果の保存・再表示（M6）
 - MVP全体の動作確認と振り返り（M7）
 
 ## 主な機能
@@ -73,6 +73,8 @@ MVPでは、以下の機能を提供する予定です。
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
+SUMMARY_MAX_ABSTRACT_CHARACTERS=12000
 ```
 
 `.env.local`には秘密情報が含まれるため、Gitへコミットしないでください。
@@ -135,6 +137,7 @@ MVPでは以下のテーブルを使用します。
 
 - `supabase/migrations/0001_initial_schema.sql`
 - `supabase/migrations/0002_papers_rls.sql`
+- `supabase/migrations/0003_summaries_m6.sql`
 
 現在の行ごとのアクセス制御（RLS）は、認証なしの個人利用向けに論文の読み取り・追加・削除を許可します。利用者ごとのデータ分離は行いません。認証とアクセス制御を整備するまでは公開サービスとして運用しないでください。
 
@@ -177,7 +180,5 @@ GET /api/health/supabase
 
 ## 今後の開発予定
 
-1. 論文詳細画面（M5）
-2. abstract要約機能（M6）
-3. MVP検証（M7）
-4. デプロイ方法の検討
+1. MVP検証（M7）
+2. デプロイ方法の検討
