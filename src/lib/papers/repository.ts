@@ -85,6 +85,17 @@ export async function listSavedPapers(page: number, pageSize: number): Promise<{
   };
 }
 
+export async function getSavedPaper(arxivId: string): Promise<SavedPaper | null> {
+  const { data, error } = await createSupabaseServerClient()
+    .from("papers")
+    .select(PAPER_COLUMNS)
+    .eq("arxiv_id", arxivId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data ? toSavedPaper(data as PaperRow) : null;
+}
+
 export async function getSavedArxivIds(arxivIds: string[]): Promise<string[]> {
   if (arxivIds.length === 0) return [];
 

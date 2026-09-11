@@ -112,7 +112,7 @@ MVPでは、1論文につき要約を1件だけ保持する。将来、要約履
 ## 6. API構成
 
 ```text
-GET    /api/papers/search?q={keyword}&page={page}
+GET    /api/arxiv/search?q={keyword}&start={offset}
 GET    /api/papers
 GET    /api/papers/{arxivId}
 POST   /api/papers
@@ -122,6 +122,8 @@ POST   /api/papers/{arxivId}/summary
 ```
 
 検索結果と保存済み論文のページサイズは20件とする。
+
+検索APIの`start`は0から始まる取得位置であり、保存一覧の`page`は1から始まるページ番号とする。M5時点では検索、保存一覧・保存状態取得、保存、保存解除、保存済み論文の詳細取得・表示が実装済み。要約状態の取得と要約の生成はM6で実装する。
 
 ## 7. セキュリティ方針
 

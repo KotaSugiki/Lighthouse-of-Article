@@ -1,6 +1,8 @@
 "use client";
 
 import type { ArxivPaper } from "../../lib/arxiv/types";
+import Link from "next/link";
+import { canonicalArxivUrl } from "../../lib/arxiv/id";
 import styles from "../article-search/article-search.module.css";
 
 type PaperCardProps = {
@@ -32,9 +34,10 @@ export function PaperCard({ paper, saved, saving = false, onToggleSave }: PaperC
         <span>{paper.categories[0] ?? "arXiv"}</span>
         <span>{formatDate(paper.publishedAt)}</span>
       </div>
-      <h2 className={styles.paperTitle}>{paper.title}</h2>
+      <h2 className={styles.paperTitle}>{saved ? <Link href={`/papers/${encodeURIComponent(paper.arxivId)}`}>{paper.title}</Link> : paper.title}</h2>
       <p className={styles.paperAuthors}>{paper.authors.slice(0, 3).join(", ") || "著者情報なし"}</p>
       <p className={styles.paperAbstract}>{paper.abstract}</p>
+      {saved ? <Link className={styles.detailLink} href={`/papers/${encodeURIComponent(paper.arxivId)}`}>詳細を見る</Link> : <p className={styles.detailHint}>詳細は保存後に閲覧できます</p>}
       <div className={styles.paperCardFooter}>
         <span>arXiv:{paper.arxivId}</span>
         <div className={styles.paperCardActions}>
@@ -49,7 +52,7 @@ export function PaperCard({ paper, saved, saving = false, onToggleSave }: PaperC
           >
             <BookmarkIcon filled={saved} />
           </button>
-          <a href={paper.arxivUrl} rel="noreferrer" target="_blank">arXivで読む ↗</a>
+          <a href={canonicalArxivUrl(paper.arxivId)} rel="noopener noreferrer" target="_blank">arXivで読む ↗</a>
         </div>
       </div>
     </article>
