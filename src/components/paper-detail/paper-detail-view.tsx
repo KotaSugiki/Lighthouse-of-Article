@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { SavedPaper } from "../../lib/papers/types";
+import type { PaperSummary } from "../../lib/summaries/types";
 import { canonicalArxivUrl } from "../../lib/arxiv/id";
 import { LighthouseMark } from "../../components/brand/lighthouse-mark";
 import styles from "./paper-detail.module.css";
@@ -23,10 +24,42 @@ function ShipMark() {
   </svg>;
 }
 
-export function PaperDetailView({ paper }: { paper: SavedPaper }) {
+export function PaperDetailView({ paper, initialSummary }: { paper: SavedPaper; initialSummary: PaperSummary | null }) {
   const [removed, setRemoved] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [error, setError] = useState(false);
+  const [summary, setSummary] = useState<PaperSummary | null>(initialSummary);
+  const [summaryError, setSummaryError] = useState(false);
+
+  async function generateSummary() {
+    if (summary?.status === "processing") return;
+    setSummaryError(false);
+    setSummary((current) => current ? { ...current, status: "processing" } : {
+      id: "pending",
+      paperId: paper.id,
+      status: "processing",
+      content: null,
+      model: null,
+      generatedAt: null,
+      updatedAt: new Date().toISOString(),
+    });
+
+    try {
+      const response = await fetch(`/api/papers/${encodeURIComponent(paper.arxivId)}/summary`, { method: "POST" });
+      const data = (await response.json()) as { summary?: PaperSummary; error?: string };
+      if (!response.ok || !data.summary) {
+        if (response.status === 409 && data.summary) {
+          setSummary(data.summary);
+          return;
+        }
+        throw new Error(data.error ?? "summary generation failed");
+      }
+      setSummary(data.summary);
+    } catch {
+      setSummaryError(true);
+      setSummary((current) => current ? { ...current, status: "failed" } : null);
+    }
+  }
 
   async function removePaper() {
     setRemoving(true);
@@ -72,8 +105,19 @@ export function PaperDetailView({ paper }: { paper: SavedPaper }) {
       </section>
       <section className={styles.section} aria-labelledby="summary-heading">
         <h2 id="summary-heading">日本語要約</h2>
-        <p className={styles.notice}>要約機能は未実装です</p>
-        <p>要約の生成・取得はM6で実装予定です。現在は要約の保存状態を確認していません。原文のAbstractをご覧ください。</p>
+        {summary?.status === "completed" && summary.content ? <div className={styles.summaryContent}>
+          <p className={styles.summaryOverview}>{summary.content.overview}</p>
+          <h3>主なポイント</h3>
+          <ul>{summary.content.keyPoints.map((point, index) => <li key={`${point}-${index}`}>{point}</li>)}</ul>
+          <h3>意義</h3>
+          <p>{summary.content.significance}</p>
+          <h3>限界・注意点</h3>
+          <p>{summary.content.limitations}</p>
+          {summary.model && <p className={styles.summaryMeta}>モデル: {summary.model}</p>}
+        </div> : summary?.status === "processing" ? <p role="status" className={styles.notice}>要約を生成しています…</p> : <>
+          {summaryError || summary?.status === "failed" ? <p role="alert" className={styles.error}>要約の生成に失敗しました。もう一度お試しください。</p> : <p>Abstractを日本語で要約し、保存できます。</p>}
+          <button className={styles.button} onClick={() => void generateSummary()} type="button">{summary?.status === "failed" ? "要約を再生成" : "要約を生成"}</button>
+        </>}
       </section>
     </article>
   );
