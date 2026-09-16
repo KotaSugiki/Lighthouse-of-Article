@@ -8,9 +8,9 @@
 
 ## 現在の実装状況
 
-M5「論文詳細・arXiv閲覧導線」まで完了し、M6「abstract要約機能」を実装中です。
+M6「abstract要約機能」まで実装・PRマージ済みで、現在はM7「MVP検証と振り返り」を進めています。
 
-タスクは[GitHub LIFE Project](https://github.com/users/KotaSugiki/projects/1)で管理しています。親Issueは[LIFE #86](https://github.com/KotaSugiki/LIFE/issues/86)、現在の作業は[LIFE #95](https://github.com/KotaSugiki/LIFE/issues/95)です。
+タスクは[GitHub LIFE Project](https://github.com/users/KotaSugiki/projects/1)で管理しています。親Issueは[LIFE #86](https://github.com/KotaSugiki/LIFE/issues/86)、現在の作業は[LIFE #96](https://github.com/KotaSugiki/LIFE/issues/96)です。
 
 ### 実装済み
 
@@ -34,7 +34,7 @@ M5「論文詳細・arXiv閲覧導線」まで完了し、M6「abstract要約機
 
 ### 開発中・未実装
 
-- MVP全体の動作確認と振り返り（M7）
+- MVP全体の動作確認と振り返り（M7進行中）
 
 ## 主な機能
 
@@ -57,7 +57,7 @@ MVPでは、以下の機能を提供する予定です。
 - Tailwind CSS
 - Supabase PostgreSQL
 - arXiv API
-- OpenAI API（要約機能で使用予定）
+- OpenAI API（要約機能で使用）
 - Vitest
 
 ## 必要な環境
