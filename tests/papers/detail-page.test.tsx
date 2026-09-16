@@ -6,7 +6,7 @@ import { paper } from "./fixture";
 
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
-it("loads the saved paper with full metadata, abstract and an honest M6 summary notice", async () => {
+it("loads the saved paper with full metadata, abstract and the M6 summary action", async () => {
   const fetchMock = vi.fn().mockResolvedValue(Response.json({ paper }));
   vi.stubGlobal("fetch", fetchMock);
   render(<PaperDetail arxivId={paper.arxivId} />);
@@ -23,8 +23,8 @@ it("loads the saved paper with full metadata, abstract and an honest M6 summary 
   expect(link.getAttribute("href")).toBe("https://arxiv.org/abs/hep-th/9901001");
   expect(link.getAttribute("target")).toBe("_blank");
   expect(link.getAttribute("rel")).toBe("noopener noreferrer");
-  expect(screen.getByText(/要約の生成・取得はM6で実装予定/)).toBeTruthy();
-  expect(screen.queryByRole("button", { name: /要約を生成/ })).toBeNull();
+  expect(screen.getByText("Abstractを日本語で要約し、保存できます。")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "要約を生成" })).toBeTruthy();
 });
 
 
@@ -52,7 +52,7 @@ it("handles a rejected network read without an unhandled rejection", async () =>
 });
 
 it.each([204, 404])("removes saved metadata after DELETE returns %s", async (status) => {
-  const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ paper })).mockResolvedValueOnce(new Response(null, { status }));
+  const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ paper })).mockResolvedValueOnce(Response.json({ summary: null })).mockResolvedValueOnce(new Response(null, { status }));
   vi.stubGlobal("fetch", fetchMock);
   render(<PaperDetail arxivId={paper.arxivId} />);
   fireEvent.click(await screen.findByRole("button", { name: "保存を解除" }));
@@ -63,7 +63,7 @@ it.each([204, 404])("removes saved metadata after DELETE returns %s", async (sta
 });
 
 it("keeps the saved state after failed DELETE and retries safely", async () => {
-  const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ paper })).mockResolvedValueOnce(new Response(null, { status: 500 })).mockResolvedValueOnce(new Response(null, { status: 204 }));
+  const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ paper })).mockResolvedValueOnce(Response.json({ summary: null })).mockResolvedValueOnce(new Response(null, { status: 500 })).mockResolvedValueOnce(new Response(null, { status: 204 }));
   vi.stubGlobal("fetch", fetchMock);
   render(<PaperDetail arxivId={paper.arxivId} />);
   fireEvent.click(await screen.findByRole("button", { name: "保存を解除" }));
